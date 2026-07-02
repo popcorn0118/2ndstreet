@@ -22,12 +22,15 @@ wp-config.php
 
 # Example themes
 /wp-content/themes/twenty*/
+/wp-content/themes/.sass-cache
 
 # Example plugin
 /wp-content/plugins/hello.php
 
 # Uploads
 /wp-content/uploads/
+
+/wp-content/wpvividbackups
 
 # Log files
 *.log
@@ -40,6 +43,8 @@ wp-config.php
 # Note: If you wish to whitelist plugins,
 # uncomment the next line
 #/wp-content/plugins
+
+/wp-content/plugins/qibuzhan-core/
 
 # All themes
 #
