@@ -51,3 +51,6 @@ wp-config.php
 # Note: If you wish to whitelist themes,
 # uncomment the next line
 #/wp-content/themes
+
+# Node dependencies (theme build tooling, e.g. wp-content/themes/arkhe)
+node_modules/

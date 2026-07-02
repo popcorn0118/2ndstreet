@@ -4,8 +4,8 @@
 const path = require( 'path' );
 const fs = require( 'fs' );
 
-// node-sass
-const sass = require( 'node-sass' );
+// dart-sass（node-sassの後継。レガシーrender APIはnode-sass互換のimporterをそのまま使える）
+const sass = require( 'sass' );
 const globImporter = require( 'node-sass-glob-importer' );
 
 // postcss
@@ -13,6 +13,8 @@ const postcss = require( 'postcss' );
 const autoprefixer = require( 'autoprefixer' );
 const cssnano = require( 'cssnano' );
 const mqpacker = require( 'css-mqpacker' );
+
+const isWatch = process.argv.includes( '--watch' );
 
 // consoleの色付け
 const red = '\u001b[31m';
@@ -45,13 +47,14 @@ const files = [
 	'module/-overlay-header',
 ];
 
-files.forEach( ( fileName ) => {
+const buildOne = ( fileName ) => {
 	// renderSyncだとimporter使えない
 	sass.render(
 		{
 			file: path.resolve( __dirname, src, `${ fileName }.scss` ),
 			outputStyle: 'compressed',
 			importer: globImporter(),
+			logger: sass.Logger.silent,
 		},
 		function ( err, sassResult ) {
 			if ( err ) {
@@ -72,4 +75,23 @@ files.forEach( ( fileName ) => {
 			}
 		}
 	);
-} );
+};
+
+const buildAll = () => {
+	files.forEach( buildOne );
+};
+
+buildAll();
+
+if ( isWatch ) {
+	const chokidar = require( 'chokidar' );
+
+	console.log( 'Watching for changes in ' + src + ' ...' );
+
+	chokidar
+		.watch( path.resolve( __dirname, src, '**/*.scss' ) )
+		.on( 'change', ( changedPath ) => {
+			console.log( 'Changed: ' + changedPath );
+			buildAll();
+		} );
+}

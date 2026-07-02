@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node sass-builder.js"
+    "build": "node sass-builder.js",
+    "watch": "node sass-builder.js --watch"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
+    "chokidar": "^3.6.0",
     "css-mqpacker": "^7.0.0",
     "cssnano": "^7.0.0",
-    "node-sass": "^9.0.0",
     "node-sass-glob-importer": "^5.3.3",
-    "postcss": "^8.4.38"
+    "postcss": "^8.4.38",
+    "sass": "^1.77.0"
   }
 }
