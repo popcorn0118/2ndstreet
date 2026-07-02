@@ -1,0 +1,16 @@
+{
+  "name": "arkhe-theme",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node sass-builder.js"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "css-mqpacker": "^7.0.0",
+    "cssnano": "^7.0.0",
+    "node-sass": "^9.0.0",
+    "node-sass-glob-importer": "^5.3.3",
+    "postcss": "^8.4.38"
+  }
+}
