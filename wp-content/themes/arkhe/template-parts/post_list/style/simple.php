@@ -27,7 +27,13 @@ $post_data = get_post();
 				) );
 
 				echo '<' . esc_attr( $h_tag ) . ' class="p-postList__title">';
-				the_title();
+				$title       = get_the_title();
+				$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
+				if ( isset( $title_parts[1] ) ) {
+					echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
+				} else {
+					echo $title;
+				}
 				echo '</' . esc_attr( $h_tag ) . '>';
 			?>
 		</div>

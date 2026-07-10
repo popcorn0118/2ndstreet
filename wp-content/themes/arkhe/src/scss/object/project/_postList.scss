@@ -24,7 +24,7 @@
 
 // li
 .p-postList__item {
-
+	
 	.p-postList.-type-simple & {
 		margin-top: 0;
 		margin-bottom: 0;
@@ -84,13 +84,17 @@
 	position: relative;
 	z-index: 0;
 	display: block;
-
+	background-color: var(--ark-article-color--accent);
+	padding: 15px;
+	
 	// 詳細度高める
 	.p-postList & {
 		color: inherit;
 		text-decoration: none;
 	}
-
+	.p-postList__title {
+		transition: transform .4s;
+	}
 	&:hover {
 
 		.c-postThumb::before {
@@ -99,6 +103,10 @@
 
 		.c-postThumb__img {
 			transform: scale(1.15);
+		}
+
+		.p-postList__title {
+			transform: translateY(-8px);
 		}
 	}
 
@@ -130,7 +138,7 @@
 
 // サムネイル画像
 .p-postList__thumb {
-
+	border: 8px solid #fff;
 	.p-postList.-type-card & {
 		width: 100%;
 	}
@@ -164,8 +172,10 @@
 	// backface-visibility: hidden;
 	position: relative;
 	transition: opacity .25s;
-
-
+	padding-left: 14px;
+	padding-right: 14px;
+    margin-top: -35px;
+	z-index: 2;
 	.p-postList.-type-card & {
 		padding-top: 1rem;
 	}
@@ -181,20 +191,35 @@
 
 	.-type-card > .p-postList__item:hover &,
 	.-type-list > .p-postList__item:hover & {
-		opacity: .75;
+		opacity: 1;
+		
 	}
 }
 
 
 // タイトル
 .p-postList__title {
+	letter-spacing: 2px !important;
+	color: var(--ark-article-color--main);
+    background:  var(--ark-article-color--text_white);
+    border: 2px solid var(--ark-article-color--text);
+    padding: 10px;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.6;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+	.title-top {
+		color: var(--ark-article-color--text);
+	}
+	.title-bottom {
 
+	}
 	.p-postList & {
 		// 詳細度高める（ショートコードでの呼び出し時（.c-postContent > h2）も考慮
 		margin: 0;
 		font-weight: 700;
 		font-size: 1.1rem;
-		line-height: 1.6;
 	}
 
 	.p-postList.-type-simple & {
@@ -238,7 +263,7 @@
 	letter-spacing: .1px;
 
 	.p-postList__title + & {
-		margin-top: .25rem;
+		margin-top: 10px;
 	}
 
 	@include tab {
