@@ -136,3 +136,55 @@ function hook_navigation_markup( $template, $class ) {
 	}
 	return $template;
 }
+
+
+/**
+ * 延伸閱讀（ACF: related_post）を記事コンテンツの末尾に挿入
+ */
+add_action( 'arkhe_after_entry_content', __NAMESPACE__ . '\hook_extended_reading' );
+function hook_extended_reading( $the_id ) {
+
+	if ( 'post' !== get_post_type( $the_id ) || ! function_exists( 'get_field' ) ) return;
+
+	$related_posts = get_field( 'related_post', $the_id );
+	if ( empty( $related_posts ) ) return;
+
+	$list_type = \Arkhe::get_setting( 'related_posts_layout' );
+
+	global $post;
+	$original_post = $post;
+	?>
+	<section class="p-entry__extendedReading c-bottomSection">
+		<h2 class="c-bottomSection__title"><?php esc_html_e( '延伸閱讀', 'arkhe' ); ?></h2>
+		<ul class="p-postList -type-<?php echo esc_attr( $list_type ); ?> -related">
+			<?php foreach ( (array) $related_posts as $related_post ) : ?>
+				<?php
+					$post = $related_post;
+					setup_postdata( $post );
+				?>
+				<li class="p-postList__item">
+					<a href="<?php the_permalink(); ?>" class="p-postList__link">
+						<?php
+							\Arkhe::get_part( 'post_list/item/thumb', array(
+								'size'  => 'medium',
+								'sizes' => '(min-width: 600px) 400px, 50vw',
+							) );
+						?>
+						<div class="p-postList__body">
+							<div class="p-postList__title"><?php the_title(); ?></div>
+							<div class="p-postList__excerpt"><?php the_excerpt(); ?></div>
+							<?php
+								\Arkhe::get_part( 'post_list/item/meta', array(
+									'show_date' => true,
+								) );
+							?>
+						</div>
+					</a>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	</section>
+	<?php
+	$post = $original_post;
+	wp_reset_postdata();
+}
