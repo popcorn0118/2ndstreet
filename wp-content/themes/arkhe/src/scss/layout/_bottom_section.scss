@@ -8,28 +8,44 @@
 
 	.p-postList.-type-list {
 
-		.p-postList__link {
-			align-items: center;
-			gap: 15px;
-			&:hover {
-				.p-postList__title {
-					transform: translateY(0);
-				}
+		// 600px未満は -type-list が元々持たない「縦積みカード」に組み替え、
+		// タイトルの枠線・背景・重なり演出はすべて .p-postList__title / __body の初期値（＝通常の一覧と同じ見た目）に任せる
+		@include mobile {
+
+			.p-postList__link {
+				display: block;
+			}
+
+			.p-postList__thumb {
+				width: 100%;
+				max-width: none;
 			}
 		}
 
-		.p-postList__body {
-			margin-top: 0;
-			padding: 14px 16px;
-			background: var(--ark-article-color--text_white);
-			border: 2px solid var(--ark-article-color--text);
-			border-width: 1px;
-		}
+		@include tab {
 
-		.p-postList__title {
-			padding: 0;
-			background: none;
-			border: 0;
+			.p-postList__link {
+				align-items: center;
+				gap: 15px;
+				&:hover {
+					.p-postList__title {
+						transform: translateY(0);
+					}
+				}
+			}
+
+			.p-postList__body {
+				margin-top: 0;
+				padding: 14px 16px;
+				background: var(--ark-article-color--text_white);
+				border: 1px solid var(--ark-article-color--text);
+			}
+
+			.p-postList__title {
+				padding: 0;
+				background: none;
+				border: 0;
+			}
 		}
 	}
 }
