@@ -171,7 +171,17 @@ function hook_extended_reading( $the_id ) {
 							) );
 						?>
 						<div class="p-postList__body">
-							<div class="p-postList__title"><?php the_title(); ?></div>
+							<h2 class="p-postList__title">
+								<?php
+									$title       = get_the_title();
+									$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
+									if ( isset( $title_parts[1] ) ) {
+										echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
+									} else {
+										echo $title;
+									}
+								?>
+							</h2>
 							<div class="p-postList__excerpt"><?php the_excerpt(); ?></div>
 							<?php
 								\Arkhe::get_part( 'post_list/item/meta', array(
