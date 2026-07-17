@@ -155,7 +155,7 @@ function hook_extended_reading( $the_id ) {
 	$original_post = $post;
 	?>
 	<section class="p-entry__extendedReading c-bottomSection">
-		<h2 class="c-bottomSection__title"><?php esc_html_e( '延伸閱讀', 'arkhe' ); ?></h2>
+		<h3 class="c-bottomSection__title u-ta-c"><?php esc_html_e( '延伸閱讀', 'arkhe' ); ?></h3>
 		<ul class="p-postList -type-<?php echo esc_attr( $list_type ); ?> -related">
 			<?php foreach ( (array) $related_posts as $related_post ) : ?>
 				<?php

@@ -2,3 +2,34 @@
 .c-bottomSection {
 	margin-top: 4rem;
 }
+
+// 延伸閱讀
+.p-entry__extendedReading {
+
+	.p-postList.-type-list {
+
+		.p-postList__link {
+			align-items: center;
+			gap: 15px;
+			&:hover {
+				.p-postList__title {
+					transform: translateY(0);
+				}
+			}
+		}
+
+		.p-postList__body {
+			margin-top: 0;
+			padding: 14px 16px;
+			background: var(--ark-article-color--text_white);
+			border: 2px solid var(--ark-article-color--text);
+			border-width: 1px;
+		}
+
+		.p-postList__title {
+			padding: 0;
+			background: none;
+			border: 0;
+		}
+	}
+}
