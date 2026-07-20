@@ -332,8 +332,29 @@
 // 首頁 文章輪播（2026/7 以後的新文章）
 //=========================================================
 .p-frontCarousel {
+	// 左右的偷看寬度（可以看到前一則/後一則貼文的多少範圍）
+	--carousel-peek: 0%;
+
 	position: relative;
+	width: 100vw;
+	margin-right: calc(50% - 50vw);
 	margin-bottom: 3.5rem;
+	margin-left: calc(50% - 50vw);
+
+	// 平板：稍微露出偷看寬度
+	@include tab {
+		--carousel-peek: 6%;
+	}
+
+	// 電腦：加大偷看寬度（讓左右的圖片更清楚可見）
+	@include pc {
+		--carousel-peek: 30%;
+	}
+}
+
+// 左右箭頭定位的基準區域（＝圖片高度的範圍）
+.p-frontCarousel__stage {
+	position: relative;
 }
 
 .p-frontCarousel__viewport {
@@ -349,31 +370,31 @@
 
 .p-postList.-type-carousel {
 	display: flex;
-	gap: 1.5rem;
+	gap: 100px;
 
 	.p-postList__item {
-		flex: 0 0 82%;
+		flex-grow: 0;
+		flex-shrink: 0;
+		flex-basis: calc(100% - (var(--carousel-peek) * 2) - 16px);
 		margin: 0;
-		scroll-snap-align: start;
-
-		@include tab {
-			flex-basis: 46%;
-		}
-
-		@include pc {
-			flex-basis: 31%;
-		}
+		scroll-snap-align: center;
 	}
 
-	// 輪播不使用黃底
+	// 輪播：滿版顯示、不使用黃底與白框
 	.p-postList__link {
+		padding: 0;
 		background-color: transparent;
+	}
+
+	.p-postList__thumb {
+		border: 0;
 	}
 }
 
+// 左右箭頭（對齊中間圖片的左右邊緣）
 .p-frontCarousel__arrow {
 	position: absolute;
-	top: 35%;
+	top: 50%;
 	z-index: 2;
 	display: flex;
 	align-items: center;
@@ -392,22 +413,38 @@
 	}
 
 	&.-prev {
-		left: -8px;
-
-		@include pc {
-			left: -20px;
-		}
+		left: var(--carousel-peek);
+		transform: translate(-130%, -50%);
 	}
 
 	&.-next {
-		right: -8px;
-
-		@include pc {
-			right: -20px;
-		}
+		right: var(--carousel-peek);
+		transform: translate(130%, -50%);
 	}
+}
 
-	@include mobile {
-		display: none;
+// 點點頁碼指示器
+.p-frontCarousel__dots {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 1.5rem;
+}
+
+.p-frontCarousel__dot {
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	background: var(--ark-article-color--text);
+	border: 0;
+	border-radius: 50%;
+	opacity: .3;
+	cursor: pointer;
+	transition: opacity .25s, background-color .25s;
+
+	&.is-active {
+		background: var(--ark-article-color--main);
+		opacity: 1;
 	}
 }

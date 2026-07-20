@@ -244,70 +244,175 @@ function hook_front_carousel() {
 		wp_reset_postdata();
 		return;
 	}
+
+	// 先把每張投影片的內容暫存起來，才能在首尾各複製一張做成無限輪播
+	$slides = array();
+	while ( $carousel_query->have_posts() ) :
+		$carousel_query->the_post();
+		ob_start();
+		?>
+		<a href="<?php the_permalink(); ?>" class="p-postList__link">
+			<?php
+				\Arkhe::get_part( 'post_list/item/thumb', array(
+					'sizes' => '(min-width: 1000px) 66vw, (min-width: 600px) 88vw, 100vw',
+				) );
+			?>
+			<div class="p-postList__body">
+				<h2 class="p-postList__title">
+					<?php
+						$title       = get_the_title();
+						$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
+						if ( isset( $title_parts[1] ) ) {
+							echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
+						} else {
+							echo $title;
+						}
+					?>
+				</h2>
+				<?php
+					\Arkhe::get_part( 'post_list/item/meta', array(
+						'show_date' => true,
+					) );
+				?>
+			</div>
+		</a>
+		<?php
+		$slides[] = ob_get_clean();
+	endwhile;
+	wp_reset_postdata();
+
+	$total = count( $slides );
 	?>
 	<section class="p-frontCarousel">
-		<div class="p-frontCarousel__viewport" data-arkhe-carousel>
-			<ul class="p-postList -type-carousel">
-				<?php while ( $carousel_query->have_posts() ) : $carousel_query->the_post(); ?>
-					<li class="p-postList__item">
-						<a href="<?php the_permalink(); ?>" class="p-postList__link">
-							<?php
-								\Arkhe::get_part( 'post_list/item/thumb', array(
-									'sizes' => '(min-width: 1000px) 33vw, (min-width: 600px) 50vw, 85vw',
-								) );
-							?>
-							<div class="p-postList__body">
-								<h2 class="p-postList__title">
-									<?php
-										$title       = get_the_title();
-										$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
-										if ( isset( $title_parts[1] ) ) {
-											echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
-										} else {
-											echo $title;
-										}
-									?>
-								</h2>
-								<?php
-									\Arkhe::get_part( 'post_list/item/meta', array(
-										'show_date' => true,
-									) );
-								?>
-							</div>
-						</a>
-					</li>
-				<?php endwhile; ?>
-			</ul>
+		<div class="p-frontCarousel__stage">
+			<div class="p-frontCarousel__viewport" data-arkhe-carousel>
+				<ul class="p-postList -type-carousel">
+					<?php if ( $total > 1 ) : ?>
+						<li class="p-postList__item" data-carousel-index="<?php echo esc_attr( $total - 1 ); ?>" inert aria-hidden="true">
+							<?php echo $slides[ $total - 1 ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</li>
+					<?php endif; ?>
+					<?php foreach ( $slides as $index => $slide_html ) : ?>
+						<li class="p-postList__item" data-carousel-index="<?php echo esc_attr( $index ); ?>">
+							<?php echo $slide_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</li>
+					<?php endforeach; ?>
+					<?php if ( $total > 1 ) : ?>
+						<li class="p-postList__item" data-carousel-index="0" inert aria-hidden="true">
+							<?php echo $slides[0]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</li>
+					<?php endif; ?>
+				</ul>
+			</div>
+			<?php if ( $total > 1 ) : ?>
+				<button type="button" class="p-frontCarousel__arrow -prev" data-arkhe-carousel-prev aria-label="<?php esc_attr_e( 'Previous', 'arkhe' ); ?>">
+					<?php \Arkhe::the_svg( 'chevron-left' ); ?>
+				</button>
+				<button type="button" class="p-frontCarousel__arrow -next" data-arkhe-carousel-next aria-label="<?php esc_attr_e( 'Next', 'arkhe' ); ?>">
+					<?php \Arkhe::the_svg( 'chevron-right' ); ?>
+				</button>
+			<?php endif; ?>
 		</div>
-		<button type="button" class="p-frontCarousel__arrow -prev" data-arkhe-carousel-prev aria-label="<?php esc_attr_e( 'Previous', 'arkhe' ); ?>">
-			<?php \Arkhe::the_svg( 'chevron-left' ); ?>
-		</button>
-		<button type="button" class="p-frontCarousel__arrow -next" data-arkhe-carousel-next aria-label="<?php esc_attr_e( 'Next', 'arkhe' ); ?>">
-			<?php \Arkhe::the_svg( 'chevron-right' ); ?>
-		</button>
+		<?php if ( $total > 1 ) : ?>
+			<div class="p-frontCarousel__dots" data-arkhe-carousel-dots>
+				<?php for ( $i = 0; $i < $total; $i++ ) : ?>
+					<button
+						type="button"
+						class="p-frontCarousel__dot<?php echo ( 0 === $i ) ? ' is-active' : ''; ?>"
+						data-arkhe-carousel-dot
+						aria-label="<?php echo esc_attr( sprintf( /* translators: %d: slide number */ __( 'Go to slide %d', 'arkhe' ), $i + 1 ) ); ?>"
+					></button>
+				<?php endfor; ?>
+			</div>
+		<?php endif; ?>
 	</section>
+	<?php if ( $total > 1 ) : ?>
 	<script>
 	( function() {
 		var carousel = document.currentScript.previousElementSibling;
 		if ( ! carousel || ! carousel.classList.contains( 'p-frontCarousel' ) ) return;
+
+		// slides 包含首尾各一張複製的投影片；索引 0 與最後一個是複製的，1~total 才是真實投影片
 		var viewport = carousel.querySelector( '[data-arkhe-carousel]' );
-		var list     = carousel.querySelector( '.p-postList.-type-carousel' );
+		var slides   = Array.prototype.slice.call( carousel.querySelectorAll( '.p-postList__item' ) );
 		var prevBtn  = carousel.querySelector( '[data-arkhe-carousel-prev]' );
 		var nextBtn  = carousel.querySelector( '[data-arkhe-carousel-next]' );
-		if ( ! viewport || ! list ) return;
+		var dots     = Array.prototype.slice.call( carousel.querySelectorAll( '[data-arkhe-carousel-dot]' ) );
+		var total    = dots.length;
 
-		function scrollByItem( direction ) {
-			var item = list.querySelector( '.p-postList__item' );
-			if ( ! item ) return;
-			var gap    = parseFloat( getComputedStyle( list ).columnGap ) || 0;
-			var amount = ( item.getBoundingClientRect().width + gap ) * direction;
-			viewport.scrollBy( { left: amount, behavior: 'smooth' } );
+		if ( ! viewport || ! slides.length || ! total ) return;
+
+		var currentIndex = 1;
+		var settleTimer   = null;
+
+		// 讓指定投影片剛好置中在 viewport 內所需的 scrollLeft（用實際畫面座標計算，不依賴 offsetParent）
+		function centerScrollLeft( slide ) {
+			var slideRect    = slide.getBoundingClientRect();
+			var viewportRect = viewport.getBoundingClientRect();
+			var delta        = ( slideRect.left + slideRect.width / 2 ) - ( viewportRect.left + viewportRect.width / 2 );
+			return viewport.scrollLeft + delta;
 		}
 
-		if ( prevBtn ) prevBtn.addEventListener( 'click', function() { scrollByItem( -1 ); } );
-		if ( nextBtn ) nextBtn.addEventListener( 'click', function() { scrollByItem( 1 ); } );
+		// 目前實際最靠近置中位置的投影片（用畫面座標比對，不受相鄰投影片露出多少影響，比 IntersectionObserver 的可視比例判斷更準確）
+		function nearestSlideIndex() {
+			var viewportRect   = viewport.getBoundingClientRect();
+			var viewportCenter = viewportRect.left + viewportRect.width / 2;
+			var closest        = 0;
+			var minDist        = Infinity;
+
+			slides.forEach( function( slide, i ) {
+				var rect = slide.getBoundingClientRect();
+				var dist = Math.abs( ( rect.left + rect.width / 2 ) - viewportCenter );
+				if ( dist < minDist ) {
+					minDist = dist;
+					closest = i;
+				}
+			} );
+
+			return closest;
+		}
+
+		function setActiveDot( slideIndex ) {
+			var realIndex = parseInt( slides[ slideIndex ].dataset.carouselIndex, 10 );
+			dots.forEach( function( dot, i ) {
+				dot.classList.toggle( 'is-active', i === realIndex );
+			} );
+		}
+
+		function goTo( slideIndex, smooth ) {
+			currentIndex = slideIndex;
+			// 'instant' 一定會跳過捲動動畫（不像 'auto' 會被 CSS 的 scroll-behavior 影響）
+			viewport.scrollTo( { left: centerScrollLeft( slides[ slideIndex ] ), behavior: smooth ? 'smooth' : 'instant' } );
+			setActiveDot( slideIndex );
+		}
+
+		if ( prevBtn ) prevBtn.addEventListener( 'click', function() { goTo( currentIndex - 1, true ); } );
+		if ( nextBtn ) nextBtn.addEventListener( 'click', function() { goTo( currentIndex + 1, true ); } );
+
+		dots.forEach( function( dot, i ) {
+			dot.addEventListener( 'click', function() { goTo( i + 1, true ); } );
+		} );
+
+		// 捲動停止後（不論是使用者手動滑動還是點擊按鈕造成的），確認目前置中的投影片
+		viewport.addEventListener( 'scroll', function() {
+			clearTimeout( settleTimer );
+			settleTimer = setTimeout( function() {
+				currentIndex = nearestSlideIndex();
+				setActiveDot( currentIndex );
+
+				// 停在首尾複製的投影片上，無動畫（往同方向）跳回對應的真實投影片
+				if ( 0 === currentIndex ) {
+					goTo( total, false );
+				} else if ( slides.length - 1 === currentIndex ) {
+					goTo( 1, false );
+				}
+			}, 120 );
+		}, { passive: true } );
+
+		// 一開始先無動畫定位到第一張真實投影片（跳過開頭複製的「最後一張」）
+		requestAnimationFrame( function() { goTo( 1, false ); } );
 	} )();
 	</script>
+	<?php endif; ?>
 	<?php
-	wp_reset_postdata();
 }
