@@ -20,6 +20,11 @@ if ( ! is_front_page() ) {
 	}
 }
 
+// 過去文章一覧の見出し
+if ( is_home() && ! is_paged() ) {
+	echo '<h2 class="c-bottomSection__title u-mb-30">' . esc_html__( '過去文章一覽', 'arkhe' ) . '</h2>';
+}
+
 // 投稿一覧
 Arkhe::get_part( 'post_list/main_query', array(
 	'list_type' => apply_filters( 'arkhe_list_type_on_home', ARKHE_LIST_TYPE ),

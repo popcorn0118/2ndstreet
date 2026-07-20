@@ -326,3 +326,88 @@
 // 		flex-basis: 100%;
 // 	}
 // }
+
+
+//=========================================================
+// 首頁 文章輪播（2026/7 以後的新文章）
+//=========================================================
+.p-frontCarousel {
+	position: relative;
+	margin-bottom: 3.5rem;
+}
+
+.p-frontCarousel__viewport {
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.p-postList.-type-carousel {
+	display: flex;
+	gap: 1.5rem;
+
+	.p-postList__item {
+		flex: 0 0 82%;
+		margin: 0;
+		scroll-snap-align: start;
+
+		@include tab {
+			flex-basis: 46%;
+		}
+
+		@include pc {
+			flex-basis: 31%;
+		}
+	}
+
+	// 輪播不使用黃底
+	.p-postList__link {
+		background-color: transparent;
+	}
+}
+
+.p-frontCarousel__arrow {
+	position: absolute;
+	top: 35%;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	background: var(--ark-article-color--text_white);
+	border: 1px solid var(--ark-color--border);
+	border-radius: 50%;
+	cursor: pointer;
+	transform: translateY(-50%);
+
+	svg {
+		width: 14px;
+		height: 14px;
+	}
+
+	&.-prev {
+		left: -8px;
+
+		@include pc {
+			left: -20px;
+		}
+	}
+
+	&.-next {
+		right: -8px;
+
+		@include pc {
+			right: -20px;
+		}
+	}
+
+	@include mobile {
+		display: none;
+	}
+}

@@ -198,3 +198,116 @@ function hook_extended_reading( $the_id ) {
 	$post = $original_post;
 	wp_reset_postdata();
 }
+
+
+/**
+ * 首頁「過去文章一覽」列表：僅顯示 2026/7 以前的文章
+ * （2026/7 起的新文章改由首頁最上方的輪播區塊顯示，見 hook_front_carousel()）
+ */
+add_action( 'pre_get_posts', __NAMESPACE__ . '\hook_home_list_before_july' );
+function hook_home_list_before_july( $query ) {
+
+	if ( is_admin() || ! $query->is_main_query() || ! $query->is_home() ) return;
+
+	$query->set( 'date_query', array(
+		array(
+			'before'    => '2026-07-01 00:00:00',
+			'inclusive' => false,
+		),
+	) );
+}
+
+
+/**
+ * 首頁最上方：2026/7 起新文章的輪播區塊
+ */
+add_action( 'arkhe_before_home_content', __NAMESPACE__ . '\hook_front_carousel' );
+function hook_front_carousel() {
+
+	if ( is_paged() ) return;
+
+	$carousel_query = new \WP_Query( array(
+		'post_type'           => 'post',
+		'posts_per_page'      => -1,
+		'ignore_sticky_posts' => true,
+		'orderby'             => 'date',
+		'order'               => 'DESC',
+		'date_query'          => array(
+			array(
+				'after'     => '2026-07-01 00:00:00',
+				'inclusive' => true,
+			),
+		),
+	) );
+
+	if ( ! $carousel_query->have_posts() ) {
+		wp_reset_postdata();
+		return;
+	}
+	?>
+	<section class="p-frontCarousel">
+		<div class="p-frontCarousel__viewport" data-arkhe-carousel>
+			<ul class="p-postList -type-carousel">
+				<?php while ( $carousel_query->have_posts() ) : $carousel_query->the_post(); ?>
+					<li class="p-postList__item">
+						<a href="<?php the_permalink(); ?>" class="p-postList__link">
+							<?php
+								\Arkhe::get_part( 'post_list/item/thumb', array(
+									'sizes' => '(min-width: 1000px) 33vw, (min-width: 600px) 50vw, 85vw',
+								) );
+							?>
+							<div class="p-postList__body">
+								<h2 class="p-postList__title">
+									<?php
+										$title       = get_the_title();
+										$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
+										if ( isset( $title_parts[1] ) ) {
+											echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
+										} else {
+											echo $title;
+										}
+									?>
+								</h2>
+								<?php
+									\Arkhe::get_part( 'post_list/item/meta', array(
+										'show_date' => true,
+									) );
+								?>
+							</div>
+						</a>
+					</li>
+				<?php endwhile; ?>
+			</ul>
+		</div>
+		<button type="button" class="p-frontCarousel__arrow -prev" data-arkhe-carousel-prev aria-label="<?php esc_attr_e( 'Previous', 'arkhe' ); ?>">
+			<?php \Arkhe::the_svg( 'chevron-left' ); ?>
+		</button>
+		<button type="button" class="p-frontCarousel__arrow -next" data-arkhe-carousel-next aria-label="<?php esc_attr_e( 'Next', 'arkhe' ); ?>">
+			<?php \Arkhe::the_svg( 'chevron-right' ); ?>
+		</button>
+	</section>
+	<script>
+	( function() {
+		var carousel = document.currentScript.previousElementSibling;
+		if ( ! carousel || ! carousel.classList.contains( 'p-frontCarousel' ) ) return;
+		var viewport = carousel.querySelector( '[data-arkhe-carousel]' );
+		var list     = carousel.querySelector( '.p-postList.-type-carousel' );
+		var prevBtn  = carousel.querySelector( '[data-arkhe-carousel-prev]' );
+		var nextBtn  = carousel.querySelector( '[data-arkhe-carousel-next]' );
+		if ( ! viewport || ! list ) return;
+
+		function scrollByItem( direction ) {
+			var item = list.querySelector( '.p-postList__item' );
+			if ( ! item ) return;
+			var gap    = parseFloat( getComputedStyle( list ).columnGap ) || 0;
+			var amount = ( item.getBoundingClientRect().width + gap ) * direction;
+			viewport.scrollBy( { left: amount, behavior: 'smooth' } );
+		}
+
+		if ( prevBtn ) prevBtn.addEventListener( 'click', function() { scrollByItem( -1 ); } );
+		if ( nextBtn ) nextBtn.addEventListener( 'click', function() { scrollByItem( 1 ); } );
+	} )();
+	</script>
+	<?php
+	wp_reset_postdata();
+}
