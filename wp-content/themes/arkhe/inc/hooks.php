@@ -343,7 +343,8 @@ function hook_front_carousel() {
 		if ( ! viewport || ! slides.length || ! total ) return;
 
 		var currentIndex = 1;
-		var settleTimer   = null;
+		var isAnimating  = false;
+		var settleTimer  = null;
 
 		// 讓指定投影片剛好置中在 viewport 內所需的 scrollLeft（用實際畫面座標計算，不依賴 offsetParent）
 		function centerScrollLeft( slide ) {
@@ -353,7 +354,7 @@ function hook_front_carousel() {
 			return viewport.scrollLeft + delta;
 		}
 
-		// 目前實際最靠近置中位置的投影片（用畫面座標比對，比 IntersectionObserver 的可視比例判斷更準確，不受相鄰投影片露出多少影響）
+		// 目前實際最靠近置中位置的投影片（用畫面座標比對，不受相鄰投影片露出多少影響）
 		function nearestSlideIndex() {
 			var viewportRect   = viewport.getBoundingClientRect();
 			var viewportCenter = viewportRect.left + viewportRect.width / 2;
@@ -379,38 +380,86 @@ function hook_front_carousel() {
 			} );
 		}
 
-		function goTo( slideIndex, smooth ) {
+		// 停在首尾複製的投影片上時，立即無動畫跳回對應的真實投影片，做出無限循環的效果
+		function correctLoopEdge() {
+			if ( 0 === currentIndex ) {
+				jumpInstant( total );
+			} else if ( slides.length - 1 === currentIndex ) {
+				jumpInstant( 1 );
+			}
+		}
+
+		function jumpInstant( slideIndex ) {
 			currentIndex = slideIndex;
-			// 'instant' 一定會跳過捲動動畫（不像 'auto' 會被 CSS 的 scroll-behavior 影響）
-			viewport.scrollTo( { left: centerScrollLeft( slides[ slideIndex ] ), behavior: smooth ? 'smooth' : 'instant' } );
+			viewport.scrollLeft = centerScrollLeft( slides[ slideIndex ] );
 			setActiveDot( slideIndex );
 		}
 
-		if ( prevBtn ) prevBtn.addEventListener( 'click', function() { goTo( currentIndex - 1, true ); } );
-		if ( nextBtn ) nextBtn.addEventListener( 'click', function() { goTo( currentIndex + 1, true ); } );
+		// 自己用 rAF 對 scrollLeft 做動畫，而不是原生 scrollTo({behavior:'smooth'})，
+		// 這樣才能明確知道動畫「何時真正結束」，避免跟 CSS scroll-snap 互搶造成位置跳動或跑掉
+		function animateScrollLeft( targetLeft, onDone ) {
+			var startLeft = viewport.scrollLeft;
+			var distance  = targetLeft - startLeft;
+			var duration  = 350;
+			var startTime = null;
+
+			if ( Math.abs( distance ) < 1 ) {
+				onDone();
+				return;
+			}
+
+			function step( timestamp ) {
+				if ( null === startTime ) startTime = timestamp;
+				var progress = Math.min( ( timestamp - startTime ) / duration, 1 );
+				var eased    = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow( -2 * progress + 2, 2 ) / 2;
+				viewport.scrollLeft = startLeft + distance * eased;
+				if ( progress < 1 ) {
+					requestAnimationFrame( step );
+				} else {
+					onDone();
+				}
+			}
+
+			requestAnimationFrame( step );
+		}
+
+		function goTo( slideIndex ) {
+			if ( isAnimating ) return;
+			isAnimating = true;
+			currentIndex = slideIndex;
+			setActiveDot( slideIndex );
+
+			var originalSnap = viewport.style.scrollSnapType;
+			viewport.style.scrollSnapType = 'none';
+
+			animateScrollLeft( centerScrollLeft( slides[ slideIndex ] ), function() {
+				correctLoopEdge();
+				viewport.style.scrollSnapType = originalSnap;
+				isAnimating = false;
+			} );
+		}
+
+		if ( prevBtn ) prevBtn.addEventListener( 'click', function() { goTo( currentIndex - 1 ); } );
+		if ( nextBtn ) nextBtn.addEventListener( 'click', function() { goTo( currentIndex + 1 ); } );
 
 		dots.forEach( function( dot, i ) {
-			dot.addEventListener( 'click', function() { goTo( i + 1, true ); } );
+			dot.addEventListener( 'click', function() { goTo( i + 1 ); } );
 		} );
 
-		// 捲動停止後（不論是使用者手動滑動還是點擊按鈕造成的），確認目前置中的投影片
+		// 使用者手動滑動（非透過箭頭／圓點）結束後，確認目前置中的投影片；
+		// 透過按鈕觸發的動畫期間一律忽略，避免跟上面的流程互相干擾
 		viewport.addEventListener( 'scroll', function() {
+			if ( isAnimating ) return;
 			clearTimeout( settleTimer );
 			settleTimer = setTimeout( function() {
 				currentIndex = nearestSlideIndex();
 				setActiveDot( currentIndex );
-
-				// 停在首尾複製的投影片上，無動畫（往同方向）跳回對應的真實投影片，做出無限循環的效果
-				if ( 0 === currentIndex ) {
-					goTo( total, false );
-				} else if ( slides.length - 1 === currentIndex ) {
-					goTo( 1, false );
-				}
+				correctLoopEdge();
 			}, 120 );
 		}, { passive: true } );
 
 		// 一開始先無動畫定位到第一張真實投影片（跳過開頭複製的「最後一張」）
-		requestAnimationFrame( function() { goTo( 1, false ); } );
+		requestAnimationFrame( function() { jumpInstant( 1 ); } );
 	} )();
 	</script>
 	<?php endif; ?>
