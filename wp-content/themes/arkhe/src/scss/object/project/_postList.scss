@@ -333,7 +333,8 @@
 //=========================================================
 .p-frontCarousel {
 	// 左右的偷看寬度（可以看到前一則/後一則貼文的多少範圍）
-	--carousel-peek: 0%;
+	// 用 vw 而非 %，才不會受容器自己的 padding 影響（避免跟下面的 padding 疊加造成重複縮減）
+	--carousel-peek: 0vw;
 
 	position: relative;
 	width: 100vw;
@@ -343,12 +344,12 @@
 
 	// 平板：稍微露出偷看寬度
 	@include tab {
-		--carousel-peek: 6%;
+		--carousel-peek: 6vw;
 	}
 
 	// 電腦：加大偷看寬度（讓左右的圖片更清楚可見）
 	@include pc {
-		--carousel-peek: 30%;
+		--carousel-peek: 30vw;
 	}
 }
 
@@ -375,7 +376,8 @@
 	.p-postList__item {
 		flex-grow: 0;
 		flex-shrink: 0;
-		flex-basis: calc(100% - (var(--carousel-peek) * 2) - 16px);
+		// 用 100vw 而非 100%，避免受父層寬度變動影響
+		flex-basis: calc(100vw - (var(--carousel-peek) * 2) - 16px);
 		margin: 0;
 		scroll-snap-align: center;
 	}

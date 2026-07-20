@@ -245,7 +245,7 @@ function hook_front_carousel() {
 		return;
 	}
 
-	// 先把每張投影片的內容暫存起來，才能在首尾各複製一張做成無限輪播
+	// 先把每張投影片的內容暫存起來，才能在首尾各複製一張做成無限循環輪播
 	$slides = array();
 	while ( $carousel_query->have_posts() ) :
 		$carousel_query->the_post();
@@ -353,7 +353,7 @@ function hook_front_carousel() {
 			return viewport.scrollLeft + delta;
 		}
 
-		// 目前實際最靠近置中位置的投影片（用畫面座標比對，不受相鄰投影片露出多少影響，比 IntersectionObserver 的可視比例判斷更準確）
+		// 目前實際最靠近置中位置的投影片（用畫面座標比對，比 IntersectionObserver 的可視比例判斷更準確，不受相鄰投影片露出多少影響）
 		function nearestSlideIndex() {
 			var viewportRect   = viewport.getBoundingClientRect();
 			var viewportCenter = viewportRect.left + viewportRect.width / 2;
@@ -400,7 +400,7 @@ function hook_front_carousel() {
 				currentIndex = nearestSlideIndex();
 				setActiveDot( currentIndex );
 
-				// 停在首尾複製的投影片上，無動畫（往同方向）跳回對應的真實投影片
+				// 停在首尾複製的投影片上，無動畫（往同方向）跳回對應的真實投影片，做出無限循環的效果
 				if ( 0 === currentIndex ) {
 					goTo( total, false );
 				} else if ( slides.length - 1 === currentIndex ) {

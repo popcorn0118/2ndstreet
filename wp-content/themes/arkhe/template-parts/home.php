@@ -22,7 +22,7 @@ if ( ! is_front_page() ) {
 
 // 過去文章一覧の見出し
 if ( is_home() && ! is_paged() ) {
-	echo '<h2 class="c-bottomSection__title u-mb-30">' . esc_html__( '過去文章一覽', 'arkhe' ) . '</h2>';
+	echo '<h2 class="c-bottomSection__title u-mb-30 u-mt-60 u-ta-c">' . esc_html__( '過去文章一覽', 'arkhe' ) . '</h2>';
 }
 
 // 投稿一覧
