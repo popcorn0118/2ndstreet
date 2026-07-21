@@ -380,12 +380,22 @@ function hook_front_carousel() {
 			} );
 		}
 
+		// 真實投影片與其複製品的內容雖然相同，但各自在 flex 版面中可能因四捨五入產生一兩個 px 的落差；
+		// 用「目前位置 ± 一輪的寬度」做算術上絕對精準的修正，而不是重新量測另一個元素的位置，避免銜接時卡一下
+		function cycleWidth() {
+			return centerScrollLeft( slides[ slides.length - 1 ] ) - centerScrollLeft( slides[ 1 ] );
+		}
+
 		// 停在首尾複製的投影片上時，立即無動畫跳回對應的真實投影片，做出無限循環的效果
 		function correctLoopEdge() {
 			if ( 0 === currentIndex ) {
-				jumpInstant( total );
+				currentIndex = total;
+				viewport.scrollLeft += cycleWidth();
+				setActiveDot( currentIndex );
 			} else if ( slides.length - 1 === currentIndex ) {
-				jumpInstant( 1 );
+				currentIndex = 1;
+				viewport.scrollLeft -= cycleWidth();
+				setActiveDot( currentIndex );
 			}
 		}
 
