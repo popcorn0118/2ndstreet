@@ -47,7 +47,7 @@ function enqueue_front_scripts() {
 
 	// 首頁輪播（Slick.js；官方 CSS 不額外引入，樣式寫在 main.css 裡）
 	if ( is_home() && ! is_paged() ) {
-		wp_enqueue_script( 'slick', ARKHE_THEME_URI . '/vendor/slick/slick.js', array( 'jquery' ), \Arkhe::$file_ver, true );
+		wp_enqueue_script( 'slick', ARKHE_THEME_URI . '/dist/js/plugin/slick.js', array( 'jquery' ), \Arkhe::$file_ver, true );
 		wp_add_inline_script( 'slick', "
 			jQuery(function($){
 				$('[data-arkhe-slick-carousel]').slick({
