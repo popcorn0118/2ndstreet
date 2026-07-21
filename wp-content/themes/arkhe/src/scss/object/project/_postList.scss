@@ -450,3 +450,184 @@
 		opacity: 1;
 	}
 }
+
+
+//=========================================================
+// 【比較用／複製版】首頁 文章輪播 - Slick.js 版
+// 上面的 .p-frontCarousel 保持原樣不動，這份是另外用 Slick.js 重做的版本，方便直接比較。
+// 只載入 vendor/slick/slick.js 本體，Slick 官方 CSS（slick.css / slick-theme.css）不額外引入，
+// 這裡直接把 Slick 版面必要的核心樣式（來源：slick.css v1.9.0）跟自訂的箭頭/圓點樣式一起寫在這
+//=========================================================
+.p-frontCarouselSlick {
+	position: relative;
+	width: 100vw;
+	margin-right: calc(50% - 50vw);
+	margin-bottom: 3.5rem;
+	margin-left: calc(50% - 50vw);
+}
+
+.p-frontCarouselSlick__track {
+
+	// --- Slick 版面必要的核心樣式 ---
+	.slick-slider {
+		position: relative;
+		display: block;
+		box-sizing: border-box;
+		user-select: none;
+		touch-action: pan-y;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.slick-list {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		margin: 0 -8px;
+		padding: 0;
+
+		&:focus {
+			outline: none;
+		}
+
+		&.dragging {
+			cursor: pointer;
+		}
+	}
+
+	.slick-slider .slick-track,
+	.slick-slider .slick-list {
+		transform: translate3d(0, 0, 0);
+	}
+
+	.slick-track {
+		position: relative;
+		top: 0;
+		left: 0;
+		display: block;
+		margin-right: auto;
+		margin-left: auto;
+
+		&::before,
+		&::after {
+			display: table;
+			content: '';
+		}
+
+		&::after {
+			clear: both;
+		}
+	}
+
+	.slick-slide {
+		display: none;
+		float: left;
+		height: 100%;
+		min-height: 1px;
+		margin: 0 8px;
+
+		img {
+			display: block;
+		}
+	}
+
+	// slick-initialized 是加在 .p-frontCarouselSlick__track 自己身上（跟這層是同一個元素），
+	// 所以要用 & 組合選擇器，不能寫成後代選擇器，不然永遠比對不到
+	&.slick-initialized .slick-slide {
+		display: block;
+	}
+
+	.slick-arrow.slick-hidden {
+		display: none;
+	}
+
+	// --- 這裡開始是自訂的箭頭/圓點樣式，跟原本輪播的視覺風格對齊 ---
+	.slick-prev,
+	.slick-next {
+		position: absolute;
+		top: 50%;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		padding: 0;
+		font-size: 0;
+		color: transparent;
+		background: var(--ark-article-color--text_white);
+		border: 1px solid var(--ark-color--border);
+		border-radius: 50%;
+		outline: none;
+		cursor: pointer;
+		transform: translateY(-50%);
+
+		&::before {
+			font-family: initial;
+			font-size: 1rem;
+			color: var(--ark-article-color--text);
+			opacity: 1;
+		}
+	}
+
+	.slick-prev {
+		left: 10px;
+
+		&::before {
+			content: '←';
+		}
+	}
+
+	.slick-next {
+		right: 10px;
+
+		&::before {
+			content: '→';
+		}
+	}
+
+	.slick-dots {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 0;
+		margin: 1.5rem 0 0;
+		list-style: none;
+
+		li {
+			width: 8px;
+			height: 8px;
+		}
+
+		button {
+			width: 8px;
+			height: 8px;
+			padding: 0;
+			font-size: 0;
+			color: transparent;
+			background: var(--ark-article-color--text);
+			border: 0;
+			border-radius: 50%;
+			opacity: .3;
+			cursor: pointer;
+		}
+
+		li.slick-active button {
+			background: var(--ark-article-color--main);
+			opacity: 1;
+		}
+	}
+}
+
+.p-frontCarouselSlick__slide {
+	// 輪播：滿版顯示、不使用黃底與白框
+	.p-postList__link {
+		display: block;
+		padding: 0;
+		background-color: transparent;
+	}
+
+	.p-postList__thumb {
+		border: 0;
+	}
+}

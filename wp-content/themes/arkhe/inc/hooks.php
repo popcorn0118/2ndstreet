@@ -475,3 +475,70 @@ function hook_front_carousel() {
 	<?php endif; ?>
 	<?php
 }
+
+
+/**
+ * 【比較用／複製版】上面的 hook_front_carousel() 用 Slick.js 重做一份，放在同一個位置的下方，
+ * 兩份同時保留、原本的完全不動，方便直接比較
+ */
+add_action( 'arkhe_before_home_content', __NAMESPACE__ . '\hook_front_carousel_slick', 11 );
+function hook_front_carousel_slick() {
+
+	if ( is_paged() ) return;
+
+	$carousel_query = new \WP_Query( array(
+		'post_type'           => 'post',
+		'posts_per_page'      => -1,
+		'ignore_sticky_posts' => true,
+		'orderby'             => 'date',
+		'order'               => 'DESC',
+		'date_query'          => array(
+			array(
+				'after'     => '2026-07-01 00:00:00',
+				'inclusive' => true,
+			),
+		),
+	) );
+
+	if ( ! $carousel_query->have_posts() ) {
+		wp_reset_postdata();
+		return;
+	}
+	?>
+	<section class="p-frontCarouselSlick">
+		<h2 class="c-bottomSection__title u-mb-30 u-ta-c">輪播比較版（Slick.js）</h2>
+		<div class="p-frontCarouselSlick__track" data-arkhe-slick-carousel>
+			<?php while ( $carousel_query->have_posts() ) : $carousel_query->the_post(); ?>
+				<div class="p-frontCarouselSlick__slide">
+					<a href="<?php the_permalink(); ?>" class="p-postList__link">
+						<?php
+							\Arkhe::get_part( 'post_list/item/thumb', array(
+								'sizes' => '(min-width: 1000px) 66vw, (min-width: 600px) 88vw, 100vw',
+							) );
+						?>
+						<div class="p-postList__body">
+							<h2 class="p-postList__title">
+								<?php
+									$title       = get_the_title();
+									$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
+									if ( isset( $title_parts[1] ) ) {
+										echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
+									} else {
+										echo $title;
+									}
+								?>
+							</h2>
+							<?php
+								\Arkhe::get_part( 'post_list/item/meta', array(
+									'show_date' => true,
+								) );
+							?>
+						</div>
+					</a>
+				</div>
+			<?php endwhile; ?>
+		</div>
+	</section>
+	<?php
+	wp_reset_postdata();
+}
