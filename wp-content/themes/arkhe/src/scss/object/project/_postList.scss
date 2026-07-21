@@ -87,8 +87,9 @@
 	background-color: var(--ark-article-color--accent);
 	padding: 15px;
 	
-	// 詳細度高める
-	.p-postList & {
+	// 詳細度高める（Slick 版沒有 .p-postList 容器，額外加上 .p-frontCarouselSlick 讓兩邊樣式一致）
+	.p-postList &,
+	.p-frontCarouselSlick & {
 		color: inherit;
 		text-decoration: none;
 	}
@@ -215,8 +216,10 @@
 	.title-bottom {
 
 	}
-	.p-postList & {
-		// 詳細度高める（ショートコードでの呼び出し時（.c-postContent > h2）も考慮
+	// 詳細度高める（ショートコードでの呼び出し時（.c-postContent > h2）も考慮）
+	// Slick 版沒有 .p-postList 容器，額外加上 .p-frontCarouselSlick 讓兩邊標題大小一致
+	.p-postList &,
+	.p-frontCarouselSlick & {
 		margin: 0;
 		font-weight: 700;
 		font-size: 1.1rem;
@@ -393,7 +396,7 @@
 	}
 }
 
-// 左右箭頭（對齊中間圖片的左右邊緣）
+// 左右箭頭（對齊中間圖片的左右邊緣）：用純 CSS 畫出細線的 chevron，不用底色圓圈
 .p-frontCarousel__arrow {
 	position: absolute;
 	top: 50%;
@@ -403,25 +406,46 @@
 	justify-content: center;
 	width: 40px;
 	height: 40px;
-	background: var(--ark-article-color--text_white);
-	border: 1px solid var(--ark-color--border);
-	border-radius: 50%;
+	background: transparent;
+	border: 0;
 	cursor: pointer;
 	transform: translateY(-50%);
 
 	svg {
-		width: 14px;
-		height: 14px;
+		display: none;
+	}
+
+	&::after {
+		content: '';
+		width: 12px;
+		height: 12px;
+		border-style: solid;
+		border-color: var(--ark-article-color--text);
+		border-width: 0 1.5px 1.5px 0;
+		opacity: .4;
+		transition: opacity .25s;
+	}
+
+	&:hover::after {
+		opacity: .8;
 	}
 
 	&.-prev {
 		left: var(--carousel-peek);
 		transform: translate(-130%, -50%);
+
+		&::after {
+			transform: rotate(135deg);
+		}
 	}
 
 	&.-next {
 		right: var(--carousel-peek);
 		transform: translate(130%, -50%);
+
+		&::after {
+			transform: rotate(-45deg);
+		}
 	}
 }
 
@@ -459,11 +483,22 @@
 // 這裡直接把 Slick 版面必要的核心樣式（來源：slick.css v1.9.0）跟自訂的箭頭/圓點樣式一起寫在這
 //=========================================================
 .p-frontCarouselSlick {
+	// 跟 .p-frontCarousel 用同一套偷看寬度設定，讓箭頭位置跟版面對齊
+	--carousel-peek: 0vw;
+
 	position: relative;
 	width: 100vw;
 	margin-right: calc(50% - 50vw);
 	margin-bottom: 3.5rem;
 	margin-left: calc(50% - 50vw);
+
+	@include tab {
+		--carousel-peek: 6vw;
+	}
+
+	@include pc {
+		--carousel-peek: 30vw;
+	}
 }
 
 .p-frontCarouselSlick__track {
@@ -482,7 +517,8 @@
 		position: relative;
 		display: block;
 		overflow: hidden;
-		margin: 0 -8px;
+		// -50px + 每張投影片左右各 50px：跟 .p-postList.-type-carousel 的 gap: 100px 對齊
+		margin: 0 -50px;
 		padding: 0;
 
 		&:focus {
@@ -523,7 +559,7 @@
 		float: left;
 		height: 100%;
 		min-height: 1px;
-		margin: 0 8px;
+		margin: 0 50px;
 
 		img {
 			display: block;
@@ -540,7 +576,7 @@
 		display: none;
 	}
 
-	// --- 這裡開始是自訂的箭頭/圓點樣式，跟原本輪播的視覺風格對齊 ---
+	// --- 這裡開始是自訂的箭頭/圓點樣式，跟原本輪播的視覺風格對齊：用純 CSS 畫出細線的 chevron，不用底色圓圈 ---
 	.slick-prev,
 	.slick-next {
 		position: absolute;
@@ -549,39 +585,55 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 40px;
-		height: 40px;
+		width: 50px;
+		height: 50px;
 		padding: 0;
 		font-size: 0;
 		color: transparent;
-		background: var(--ark-article-color--text_white);
-		border: 1px solid var(--ark-color--border);
-		border-radius: 50%;
+		background: transparent;
+		border: 0;
 		outline: none;
 		cursor: pointer;
 		transform: translateY(-50%);
 
 		&::before {
-			font-family: initial;
-			font-size: 1rem;
-			color: var(--ark-article-color--text);
-			opacity: 1;
+			content: '';
+			display: block;
+			width: 25px;
+			height: 25px;
+			border-style: solid;
+			border-color: var(--ark-article-color--text);
+			border-width: 0 1.5px 1.5px 0;
+			opacity: .4;
+			transition: opacity .25s;
+		}
+
+		&:hover::before {
+			opacity: .8;
 		}
 	}
 
+	// 跟 .p-frontCarousel__arrow 對齊：位置也用同一個 --carousel-peek 貼齊中間圖片的左右邊緣
 	.slick-prev {
-		left: 10px;
+		left: var(--carousel-peek);
+		transform: translate(-130%, -50%);
+		@include sp() {
+			transform: translate(-80%, -50%);
+		}
 
 		&::before {
-			content: '←';
+			transform: rotate(135deg);
 		}
 	}
 
 	.slick-next {
-		right: 10px;
-
+		right: var(--carousel-peek);
+		transform: translate(130%, -50%);
+		@include sp() {
+			transform: translate(80%, -50%);
+		}
 		&::before {
-			content: '→';
+			transform: rotate(-45deg);
 		}
 	}
 
