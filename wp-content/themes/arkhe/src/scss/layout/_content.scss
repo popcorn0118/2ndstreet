@@ -25,6 +25,11 @@
 		margin-top: 0;
 		margin-bottom: 0;
 	}
+	.home & {
+		@include sp() {
+			margin-top: 0;
+		}
+	}
 
 }
 
