@@ -84,8 +84,8 @@
 	position: relative;
 	z-index: 0;
 	display: block;
-	background-color: var(--ark-article-color--accent);
-	padding: 15px;
+	// background-color: var(--ark-article-color--accent);
+	// padding: 15px;
 	
 	// 詳細度高める（Slick 版沒有 .p-postList 容器，額外加上 .p-frontCarouselSlick 讓兩邊樣式一致）
 	.p-postList &,
@@ -139,7 +139,7 @@
 
 // サムネイル画像
 .p-postList__thumb {
-	border: 8px solid #fff;
+	// border: 8px solid #fff;
 	.p-postList.-type-card & {
 		width: 100%;
 	}
@@ -320,7 +320,7 @@
 
 		// サイズ小さくする？
 		.p-postList__thumb {
-			max-width: 240px;
+			max-width: 250px;
 		}
 	}
 }

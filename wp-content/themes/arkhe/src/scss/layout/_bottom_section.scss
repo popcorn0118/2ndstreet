@@ -27,6 +27,7 @@
 			.p-postList__link {
 				align-items: center;
 				gap: 15px;
+				border: 1px solid #dcdcde;
 				&:hover {
 					.p-postList__title {
 						transform: translateY(0);
@@ -38,7 +39,7 @@
 				margin-top: 0;
 				padding: 14px 16px;
 				background: var(--ark-article-color--text_white);
-				border: 1px solid var(--ark-article-color--text);
+				// border: 1px solid var(--ark-article-color--text);
 			}
 
 			.p-postList__title {
