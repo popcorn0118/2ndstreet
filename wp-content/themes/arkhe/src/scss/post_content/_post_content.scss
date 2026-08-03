@@ -213,7 +213,7 @@ li {
 				background-color: var(--ark-article-color--text);
 				margin-left: 5px;
 				@include max-width(768px) {
-					height: 30px;
+					display: none;
 				}
 			}
 			&:last-of-type {
