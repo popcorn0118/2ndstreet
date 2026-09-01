@@ -201,82 +201,13 @@ function hook_extended_reading( $the_id ) {
 
 
 /**
- * 首頁「過去文章一覽」列表：僅顯示 2026/7 以前的文章
- * （2026/7 起的新文章改由首頁最上方的輪播區塊顯示，見 hook_front_carousel()）
- */
-add_action( 'pre_get_posts', __NAMESPACE__ . '\hook_home_list_before_july' );
-function hook_home_list_before_july( $query ) {
-
-	if ( is_admin() || ! $query->is_main_query() || ! $query->is_home() ) return;
-
-	$query->set( 'date_query', array(
-		array(
-			'before'    => '2026-07-01 00:00:00',
-			'inclusive' => false,
-		),
-	) );
-}
-
-/**
- * 首頁最上方：2026/7 起新文章的輪播區塊（用 Slick.js 實作）
+ * 首頁最上方區塊
  */
 add_action( 'arkhe_before_home_content', __NAMESPACE__ . '\hook_front_carousel' );
 function hook_front_carousel() {
 
 	if ( is_paged() ) return;
-
-	$carousel_query = new \WP_Query( array(
-		'post_type'           => 'post',
-		'posts_per_page'      => -1,
-		'ignore_sticky_posts' => true,
-		'orderby'             => 'date',
-		'order'               => 'DESC',
-		'date_query'          => array(
-			array(
-				'after'     => '2026-07-01 00:00:00',
-				'inclusive' => true,
-			),
-		),
-	) );
-
-	if ( ! $carousel_query->have_posts() ) {
-		wp_reset_postdata();
-		return;
-	}
 	?>
-	<section class="p-frontCarouselSlick">
-		<div class="p-frontCarouselSlick__track" data-arkhe-slick-carousel>
-			<?php while ( $carousel_query->have_posts() ) : $carousel_query->the_post(); ?>
-				<div class="p-frontCarouselSlick__slide">
-					<a href="<?php the_permalink(); ?>" class="p-postList__link">
-						<?php
-							\Arkhe::get_part( 'post_list/item/thumb', array(
-								'sizes' => '(min-width: 1000px) 66vw, (min-width: 600px) 88vw, 100vw',
-							) );
-						?>
-						<div class="p-postList__body">
-							<h2 class="p-postList__title">
-								<?php
-									$title       = get_the_title();
-									$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
-									if ( isset( $title_parts[1] ) ) {
-										echo '<span class="title-top">' . $title_parts[0] . '</span><br><span class="title-bottom">' . $title_parts[1] . '</span>';
-									} else {
-										echo $title;
-									}
-								?>
-							</h2>
-							<?php
-								\Arkhe::get_part( 'post_list/item/meta', array(
-									'show_date' => true,
-								) );
-							?>
-						</div>
-					</a>
-				</div>
-			<?php endwhile; ?>
-		</div>
-	</section>
+	<section></section>
 	<?php
-	wp_reset_postdata();
 }
