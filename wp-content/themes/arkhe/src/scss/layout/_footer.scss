@@ -95,6 +95,17 @@
 	}
 }
 
+#footer-top {
+	gap: 50px;
+	justify-content: space-evenly;
+	@include mobile {
+		flex-direction: column;
+	}
+	.left, .right {
+
+	}
+}
+
 .c-copyright {
 	font-size: .8rem;
 	text-align: center;
