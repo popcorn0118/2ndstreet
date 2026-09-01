@@ -288,6 +288,60 @@
 }
 
 
+// 一般的なカードリスト（ホーム・アーカイブ等）：白枠タイトルボックスをやめて、
+// 画像の下に少しオーバーラップさせつつ、左だけ余白を空けて「破版」っぽく見せる
+// 「延伸閱讀」(.-related) は対象外、従来のデザインのまま
+.p-postList.-type-card:not(.-related) {
+
+	.p-postList__body {
+		position: relative;
+		margin-top: -24px;
+		margin-left: 28px;
+		margin-right: 0;
+		padding: 20px 24px 24px;
+		background: var(--ark-article-color--text_white);
+	}
+
+	.p-postList__title {
+		letter-spacing: normal !important;
+		color: var(--ark-article-color--text);
+		background: none;
+		border: 0;
+		padding: 0;
+		text-align: left;
+
+		.title-bottom {
+			color: var(--ark-article-color--text);
+		}
+	}
+
+	.p-postList__meta {
+
+		.p-postList__title + & {
+			justify-content: flex-start;
+		}
+	}
+
+	.p-postList__category {
+		order: -1;
+		padding: 2px 10px;
+		color: var(--ark-article-color--text_white);
+		font-weight: 700;
+		background: var(--ark-article-color--main);
+		border-radius: 2px;
+
+		.c-postMetas__icon {
+			display: none;
+		}
+	}
+
+	// hover時はサムネイル拡大だけ、タイトルのアニメーションは無し
+	.p-postList__link:hover .p-postList__title {
+		transform: none;
+	}
+}
+
+
 // 関連記事
 .p-postList.-related {
 
