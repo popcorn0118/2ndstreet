@@ -1,0 +1,31 @@
+@charset "UTF-8";
+
+.p-categorySection, .p-archiveSection {
+	.c-bottomSection__title {
+		letter-spacing: 1px;
+		@include mobile {
+			font-size: 24px;
+		}
+	}
+}
+// 首頁分類列表（CATEGORY）
+.p-categorySection {
+	padding-bottom: 5rem;
+	@include mobile {
+		padding-bottom: 3.5rem;
+	}
+}
+// 首頁文章列表（ARCHIVE）：背景色滿版
+// 只用 100vw 會因為捲軸寬度歪一邊，用 --ark-scrollbar_width 補正（跟 _alignfull.scss 同一套做法）
+.p-archiveSection {
+	position: relative;
+	left: calc(50% - ( 50vw - var(--ark-scrollbar_width) / 2 ));
+	width: calc(100vw - var(--ark-scrollbar_width));
+	padding-top: 5rem;
+	padding-bottom: 5rem;
+	background: #F6F6F6;
+	@include mobile {
+		padding-top: 3.5rem;
+		padding-bottom: 3.5rem;
+	}
+}

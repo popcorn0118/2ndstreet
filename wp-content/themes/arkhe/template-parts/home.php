@@ -20,18 +20,35 @@ if ( ! is_front_page() ) {
 	}
 }
 
+// 分類篩選（只在第一頁顯示）
+if ( is_home() && ! is_paged() ) :
+	?>
+	<section class="p-categorySection">
+		<h2 class="c-bottomSection__title u-mb-30 u-mt-60 c-titleMark"><?php esc_html_e( 'CATEGORY', 'arkhe' ); ?></h2>
+		<?php Arkhe::get_part( 'other/category_filter' ); ?>
+	</section>
+	<?php
+endif;
+
 // ARCHIVE
-if ( is_home() && ! is_paged() ) {
-	echo '<h2 class="c-bottomSection__title u-mb-30 u-mt-60">' . esc_html__( 'ARCHIVE', 'arkhe' ) . '</h2>';
-}
+?>
+<section class="p-archiveSection" id="js-archiveList">
+	<div class="l-container">
+		<?php if ( is_home() && ! is_paged() ) : ?>
+			<h2 class="c-bottomSection__title u-mb-30 c-titleMark"><?php esc_html_e( 'ARCHIVE', 'arkhe' ); ?></h2>
+		<?php endif; ?>
 
-// 投稿一覧
-Arkhe::get_part( 'post_list/main_query', array(
-	'list_type' => apply_filters( 'arkhe_list_type_on_home', ARKHE_LIST_TYPE ),
-) );
+		<?php
+			// 投稿一覧
+			Arkhe::get_part( 'post_list/main_query', array(
+				'list_type' => apply_filters( 'arkhe_list_type_on_home', ARKHE_LIST_TYPE ),
+			) );
 
-// ページャー
-the_posts_pagination( array(
-	'mid_size' => 2,
-	// 'screen_reader_text' => 'ページネーション',
-) );
+			// ページャー
+			the_posts_pagination( array(
+				'mid_size' => 2,
+				// 'screen_reader_text' => 'ページネーション',
+			) );
+		?>
+	</div>
+</section>

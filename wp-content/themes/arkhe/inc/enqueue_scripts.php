@@ -44,6 +44,11 @@ function enqueue_front_scripts() {
 	wp_enqueue_script( 'arkhe-main-script', ARKHE_THEME_URI . '/dist/js/main.js', array(), \Arkhe::$file_ver, true );
 	wp_localize_script( 'arkhe-main-script', 'arkheVars', \Arkhe::get_front_global_vars() );
 	wp_dequeue_style( 'classic-theme-styles' );
+
+	// 首頁分類篩選
+	if ( is_home() && ! is_paged() ) {
+		wp_enqueue_script( 'arkhe-category-filter', ARKHE_THEME_URI . '/dist/js/category-filter.js', array(), \Arkhe::$file_ver, true );
+	}
 }
 
 function enqueue_front_scripts_99() {

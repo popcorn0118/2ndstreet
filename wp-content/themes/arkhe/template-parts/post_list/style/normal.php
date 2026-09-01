@@ -14,9 +14,10 @@ $show_author   = isset( $args['show_author'] ) ? $args['show_author'] : Arkhe::g
 $list_type     = isset( $args['list_type'] ) ? $args['list_type'] : ARKHE_LIST_TYPE;
 
 // 投稿データ取得
-$post_data = get_post();
+$post_data    = get_post();
+$post_cat_ids = wp_list_pluck( get_the_category(), 'term_id' );
 ?>
-<li class="<?php echo esc_attr( trim( 'p-postList__item ' . $list_class ) ); ?>">
+<li class="<?php echo esc_attr( trim( 'p-postList__item ' . $list_class ) ); ?>" data-cats="<?php echo esc_attr( implode( ',', $post_cat_ids ) ); ?>">
 	<a href="<?php the_permalink(); ?>" class="p-postList__link">
 		<?php
 			Arkhe::get_part( 'post_list/item/thumb', array(

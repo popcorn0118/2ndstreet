@@ -1,0 +1,93 @@
+@charset "UTF-8";
+
+// 分類篩選按鈕
+.p-categoryFilter__list {
+	@extend %reset_list;
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 1.5rem 1rem;
+}
+
+.p-categoryFilter__item {
+	flex: 0 0 calc(33.33% - .7rem);
+	margin: 0;
+
+	@include mobile {
+		// flex: 0 0 100%;
+	}
+}
+
+.p-categoryFilter__btn {
+	display: block;
+	width: 100%;
+	padding: 0;
+	color: inherit;
+	text-align: center;
+	background: none;
+	border: 0;
+	cursor: pointer;
+}
+
+.p-categoryFilter__imgWrap {
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	aspect-ratio: 2 / 1;
+}
+
+.p-categoryFilter__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: .7;
+	transition: opacity .25s;
+
+	.p-categoryFilter__btn.current & {
+		opacity: 1;
+	}
+}
+
+.p-categoryFilter__body {
+	display: block;
+	padding: 14px 10px 16px;
+	background: var(--ark-article-color--accent-2);
+	@include mobile {
+		padding: 10px;
+	}
+}
+
+.p-categoryFilter__name {
+	display: block;
+	font-weight: 700;
+	font-size: 1.4rem;
+	color: var(--ark-article-color--main-2);
+	@include mobile {
+		font-size: 1.1rem;
+	}
+}
+
+.p-categoryFilter__nameEn {
+	display: block;
+	margin-top: .2em;
+	font-size: .65rem;
+	font-weight: 700;
+	letter-spacing: .05em;
+	color: var(--ark-article-color--main-2);
+	@include mobile {
+		font-size: .5rem;
+	}
+}
+
+.p-categoryFilter__arrow {
+	display: block;
+	width: 0;
+	height: 0;
+	margin: 8px auto 0;
+	border-style: solid;
+	border-width: 6px 5px 0 5px;
+	border-color: var(--ark-article-color--main-2) transparent transparent transparent;
+	@include mobile {
+		margin: 5px auto 0;
+	}
+}

@@ -220,8 +220,9 @@
 	.p-postList & {
 		margin: 0;
 		font-weight: 700;
-		font-size: 1.1rem;
+		font-size: 1.3rem;
 		font-family: 'Noto Sans TC';
+		line-height: 1.4;
 	}
 
 	.p-postList.-type-simple & {
@@ -266,7 +267,6 @@
 
 	.p-postList__title + & {
 		margin-top: 10px;
-		justify-content: center;
 	}
 
 	@include tab {
@@ -288,13 +288,23 @@
 }
 
 
-// 一般的なカードリスト（ホーム・アーカイブ等）：白枠タイトルボックスをやめて、
-// 画像の下に少しオーバーラップさせつつ、左だけ余白を空けて「破版」っぽく見せる
-// 「延伸閱讀」(.-related) は対象外、従来のデザインのまま
+// 一般卡片列表（首頁、彙整頁等）：拿掉白底黑框的標題盒子，
+// 改成圖片下方稍微重疊、只留左邊空白，做出「破版」的錯位效果
+// 「延伸閱讀」(.-related) 不受影響，維持原本的樣式
 .p-postList.-type-card:not(.-related) {
+
+	// 讓同一列的卡片等高：.p-postList__item 本來就是 flex 子項會自動等高，
+	// 這裡把連結也改成直向 flex，讓 .p-postList__body 撐開填滿高度
+	.p-postList__link {
+		display: flex;
+		flex-direction: column;
+	}
 
 	.p-postList__body {
 		position: relative;
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
 		margin-top: -24px;
 		margin-left: 28px;
 		margin-right: 0;
@@ -327,7 +337,7 @@
 		padding: 2px 10px;
 		color: var(--ark-article-color--text_white);
 		font-weight: 700;
-		background: var(--ark-article-color--main);
+		background: var(--ark-article-color--main-2);
 		border-radius: 2px;
 
 		.c-postMetas__icon {
@@ -335,7 +345,7 @@
 		}
 	}
 
-	// hover時はサムネイル拡大だけ、タイトルのアニメーションは無し
+	// hover 時只放大縮圖，標題不做位移動畫
 	.p-postList__link:hover .p-postList__title {
 		transform: none;
 	}
