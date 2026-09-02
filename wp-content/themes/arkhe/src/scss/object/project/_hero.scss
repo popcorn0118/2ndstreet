@@ -1,0 +1,143 @@
+@charset "UTF-8";
+
+// 首頁 HERO：抓最新一篇文章
+// 滿版：只用 100vw 會因為捲軸寬度歪一邊，用 --ark-scrollbar_width 補正（跟 _archiveSection.scss 同一套做法）
+.p-hero {
+	position: relative;
+	left: calc(50% - ( 50vw - var(--ark-scrollbar_width) / 2 ));
+	display: block;
+	width: calc(100vw - var(--ark-scrollbar_width));
+}
+
+.p-hero__link {
+	position: relative;
+	// overflow: hidden;
+	// aspect-ratio: 21 / 9;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4% 11% 4% 17%;
+	// max-height: calc(100vh - 75px);
+	// min-height: 700px;
+	@include mobile {
+		// aspect-ratio: 1 / 1;
+		padding: 14%;
+	}
+
+	// 左邊的黃色色塊：跟著 .p-hero__link 這個父層撐滿高度
+	&::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		z-index: 0;
+		width: 32%;
+		height: 100%;
+		background: var(--ark-article-color--accent-2);
+		content: "";
+	}
+}
+
+// 圖片
+.p-hero__imgWrap {
+	position: relative;
+	// left: 16%;
+	// right: 10%;
+	// top: 50%;
+    // transform: translateY(-50%);
+	z-index: 1;
+	display: block;
+	overflow: hidden;
+	aspect-ratio: 2 / 1;
+	max-height: 100%;
+	@include mobile {
+		aspect-ratio: 1 / 1;
+	}
+}
+
+.p-hero__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+// 右上角的裝飾圖片（セカストのハナシ）
+.p-hero__banner {
+	position: absolute;
+	right: 3%;
+    top: 14%;
+	z-index: 2;
+	width: auto;
+	height: 55%;
+
+	@include mobile {
+		top: 9%;
+
+	}
+}
+
+// NEW + 標題
+.p-hero__body {
+	position: absolute;
+	bottom: 15%;
+	left: 6%;
+	z-index: 2;
+	width: 50%;
+	@include mobile {
+		width: 100%;
+		bottom: 6%;
+    	left: 5%;
+	}
+}
+
+.p-hero__new {
+	display: block;
+	margin-bottom: 20px;
+	font-weight: 700;
+	font-size: 2rem;
+	color: var(--ark-article-color--main-2);
+	img {
+			width: 50px;
+		}
+	@include tab-only {
+		margin-bottom: 10px;
+	}
+	@include mobile {
+		margin-bottom: 5px;
+		img {
+			width: 25px;
+		}
+		
+	}
+}
+
+.p-hero__title {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	@include mobile {
+		gap: 8px;
+	}
+	.title-top,
+	.title-bottom {
+		display: block;
+		width: fit-content;
+		padding: 10px 25px;
+		font-weight: 600;
+		font-size: 1.8rem;
+		line-height: 1.4;
+		color: var(--ark-article-color--accent-2);
+		background: var(--ark-article-color--main-2);
+
+		@include tab-only {
+			font-size: 1.2rem;
+			padding: 5px 10px;
+		}
+		@include mobile {
+			font-size: 1rem;
+			padding: 5px 10px;
+		}
+	}
+}

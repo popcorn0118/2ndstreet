@@ -28,6 +28,19 @@
 	}
 }
 
+// tabのみ（600px以上 999px以下）
+// ※ sp（0〜999px）と mobile（0〜599px）を同じプロパティで併用すると、
+//   css-mqpacker が min-width の数値順に @media を並べ替えるため、
+//   ソースの記述順に関係なく sp が常に mobile より後（＝優先）になってしまう。
+//   600〜999px だけに当てたい場合は sp ではなくこちらを使う。
+@mixin tab-only {
+
+	@media (min-width: 600px) and (max-width: 999px) {
+
+		@content;
+	}
+}
+
 
 //pc以上
 @mixin pc {

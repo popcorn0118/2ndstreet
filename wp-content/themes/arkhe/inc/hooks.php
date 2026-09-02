@@ -201,13 +201,53 @@ function hook_extended_reading( $the_id ) {
 
 
 /**
- * 首頁最上方區塊
+ * 首頁最上方 HERO：抓最新 1 篇文章
  */
 add_action( 'arkhe_before_home_content', __NAMESPACE__ . '\hook_front_carousel' );
 function hook_front_carousel() {
 
 	if ( is_paged() ) return;
+
+	$latest_posts = get_posts( array(
+		'post_type'           => 'post',
+		'posts_per_page'      => 1,
+		'ignore_sticky_posts' => true,
+		'orderby'             => 'date',
+		'order'               => 'DESC',
+	) );
+
+	if ( empty( $latest_posts ) || ! has_post_thumbnail( $latest_posts[0] ) ) return;
+
+	$hero_post   = $latest_posts[0];
+	$title       = get_the_title( $hero_post );
+	$title_parts = preg_split( '/<br\s*\/?>/i', $title, 2 );
 	?>
-	<section></section>
+	<section class="p-hero">
+		<a href="<?php echo esc_url( get_permalink( $hero_post ) ); ?>" class="p-hero__link">
+			<span class="p-hero__imgWrap">
+				<?php
+					echo get_the_post_thumbnail( $hero_post, 'large', array(
+						'class' => 'p-hero__img',
+						'sizes' => '(min-width: 600px) 85vw, 100vw',
+					) );
+				?>
+			</span>
+			<img class="p-hero__banner" src="<?php echo esc_url( ARKHE_THEME_URI . '/assets/img/banner-slogan.svg' ); ?>" alt="">
+			<span class="p-hero__body">
+				<span class="p-hero__new">
+					<img src="<?php echo esc_url( ARKHE_THEME_URI . '/assets/img/new-title.svg' ); ?>" alt="">
+					<?php //esc_html_e( 'NEW', 'arkhe' ); ?>
+				</span>
+				<span class="p-hero__title">
+					<?php if ( isset( $title_parts[1] ) ) : ?>
+						<span class="title-top"><?php echo $title_parts[0]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+						<span class="title-bottom"><?php echo $title_parts[1]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+					<?php else : ?>
+						<span class="title-top"><?php echo $title; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+					<?php endif; ?>
+				</span>
+			</span>
+		</a>
+	</section>
 	<?php
 }

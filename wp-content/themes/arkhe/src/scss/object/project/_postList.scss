@@ -223,6 +223,9 @@
 		font-size: 1.3rem;
 		font-family: 'Noto Sans TC';
 		line-height: 1.4;
+		@include sp {
+			font-size: 1.1rem;
+		}
 	}
 
 	.p-postList.-type-simple & {
@@ -310,6 +313,10 @@
 		margin-right: 0;
 		padding: 20px 24px 24px;
 		background: var(--ark-article-color--text_white);
+		@include mobile {
+			margin-top: 0;
+			margin-left: 0;
+		}
 	}
 
 	.p-postList__title {
